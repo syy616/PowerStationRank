@@ -248,8 +248,12 @@
           totalMoney += thisData["总费用"];
           // option.series[1].data.push(thisData["总费用"]);
         }
-        $(".allPower").html(convertToBigString(totalDL.toFixed(2)));//总电量
-        $(".allCost").html(convertMoney(totalMoney.toFixed(2), '元', true));//总金额
+        var power = totalDL.toFixed(2);
+        $(".allPower").html(power);
+        var cost = totalMoney.toFixed(2);
+        $(".allCost").html(cost);
+        // $(".allPower").html(convertToBigString(power));//总电量
+        // $(".allCost").html(convertMoney(totalMoney.toFixed(2), '元', true));//总金额
         myChart.setOption(option);
       }
 
