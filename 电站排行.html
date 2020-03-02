@@ -9,13 +9,14 @@
   <title>电站排行查询</title>
   <!-- Bootstrap -->
   <link href="css/bootstrap.css" rel="stylesheet">
-
+  <link href="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css"
+    rel="stylesheet">
   <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
   <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
-  <!--[if lt IE 9]>
-      <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
-    <![endif]-->
+  <!--[if lt IE 9]>-->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script> -->
+  <!--<![endif]-->
   <style type="text/css">
     body,
     html {
@@ -80,17 +81,40 @@
           </div>
 
           <div class="form-group">
+            <label class="col-xs-4 col-sm-2 col-md-4 col-lg-3 control-label">选择年份：</label>
+            <div class="col-xs-8 col-sm-9 col-md-8 col-lg-9">
+              <select class="form-control fullYear">
+                <!-- <option>牛牛充电站</option> -->
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-xs-4 col-sm-2 col-md-4 col-lg-3 control-label">数据查询范围：</label>
+            <div class="col-xs-8 col-sm-9 col-md-8 col-lg-9">
+              <select class="form-control" id="searctype">
+                <option value="1">自营</option>
+                <option value="2">代收代付</option>
+                <option value="3">全部</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
             <label class="col-xs-4 col-sm-2 col-md-4 col-lg-3 control-label">总发电量：</label>
             <div class="col-xs-8 col-sm-10 col-md-8 col-lg-9">
-              <p class="form-control-static allPower">546.343GWh</p>
+              <p class="form-control-static allPower"></p>
             </div>
           </div>
 
           <div class="form-group">
             <label class="col-xs-4 col-sm-2 col-md-4 col-lg-3 control-label">总金额：</label>
             <div class="col-xs-8 col-sm-10  col-md-8 col-lg-9">
-              <p class="form-control-static allCost">543.45万元</p>
+              <p class="form-control-static allCost"></p>
             </div>
+          </div>
+          <div class="form-group" style="text-align: center;margin-bottom: 30px;">
+            <button type="button" class="btn btn-info" id="checkinfo">查 询</button>
           </div>
 
           <div id="main" style="width:100%;height: 500px;"></div>
@@ -99,202 +123,87 @@
 
       <div class="col-sm-12 col-md-6">
         <div id="border-line">
-          <table class="table table-light">
-            <thead class="thead-light">
-              <tr>
-                <th colspan="3"> 电站月充电量排行</th>
-              </tr>
-              <tr>
-                <th class="span2" width="15%">排名</th>
-                <th class="span8">电站名称</th>
-                <th class="span2" width="15%">充电量</th>
-              </tr>
-            </thead>
-            <tbody id="rankList">
-              <!-- <tr>
-                <td class="stationId">1</td>
-                <td id="station">牛牛新能源</td>
-                <td id="111">50233wh</td>
-              </tr>
-              <tr>-->
-            </tbody>
-          </table>
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="col-xs-4 col-sm-2 col-md-4 col-lg-3 control-label">选择年月：</label>
+              <!-- <div class="col-xs-8 col-sm-9 col-md-8 col-lg-9">
+                <input type="text" class="form-control" value="" id="datetimepicker" data-date-format="yyyy-mm">
+              </div> -->
+              <div class="col-xs-8 col-sm-9 col-md-8 col-lg-9">
+                <div class='input-group date datecheck' id='datetimepicker'>
+                  <input type='text' class="form-control" id="datachange" />
+                  <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+        </div>
+        </form>
+        <div class="row">
+          <div class="col-md-2"></div>
+          <div class="col-md-10">
+            <table class="table table-light">
+              <thead class="thead-light">
+                <tr>
+                  <th colspan="3" style="color: #F44336;"> 电站本月充电量排行</th>
+                </tr>
+                <tr>
+                  <th class="span2" width="15%">排名</th>
+                  <th class="span8">电站名称</th>
+                  <th class="span2" width="15%">充电量</th>
+                </tr>
+              </thead>
+              <tbody id="rankList">
+                <!-- <tr>
+                    <td class="stationId">1</td>
+                    <td id="station">牛牛新能源</td>
+                    <td id="111">50233wh</td>
+                  </tr>
+                  <tr>-->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+        <div class="row">
+          <div class="col-md-2"></div>
+          <div class="col-md-10">
+            <table class="table table-light">
+              <thead class="thead-light">
+                <tr>
+                  <th colspan="3" style="color: #F44336;"> 电站昨日充电量排行</th>
+                </tr>
+                <tr>
+                  <th class="span2" width="15%">排名</th>
+                  <th class="span8">电站名称</th>
+                  <th class="span2" width="15%">充电量</th>
+                </tr>
+              </thead>
+              <tbody id="rankYesList">
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
-
     </div>
+  </div>
 
-    <div class="row">
-      <div class="col-md-6">
+  <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+  <script src="js/jquery.js"></script>
+  <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+  <script src="js/bootstrap.min.js"></script>
+  <script src="https://cdn.bootcss.com/moment.js/2.24.0/moment-with-locales.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+  <script src="js/echarts.min.js"></script>
+  <script src="js/data.js">  </script>
+  <script src="js/stationrRank.js"></script>
+  <script>
 
-      </div>
-      <div class="col-md-6"></div>
-    </div>
-
-    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
-    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/echarts.min.js"></script>
-    <script src="js/data.js">  </script>
-    <script type="text/javascript">
-      // (function pushRank() {
-
-      //   for (var i = 1; i <= 10; i++) {
-
-      //   }
-      // })();
-
-      // 基于准备好的dom，初始化echarts实例
-      var myChart = echarts.init(document.getElementById('main'));
-
-      // 指定图表的配置项和数据
-      var option = {
-        title: {
-          text: '电站每月电量'
-        },
-        tooltip: {},
-        legend: {
-          data: ['电量', '费用']
-        },
-        xAxis: {
-          data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
-        },
-        yAxis: {
-          type: 'value',
-          name: '单位:kWh'
-        },
-        series:
-          [
-            {
-              label: {
-
-                show: false,
-                position: 'top'
-              },
-              barMaxWidth: 40,
-              name: '电量',
-              type: 'bar',
-              data: [5, 20, 36, 10, 10, 20]
-            }
-            //     ,
-            //     {
-            //         label: {
-            //     show: true,
-            //     position: 'top'
-            // },
-            //         barMaxWidth :40,
-            //         name: '费用',
-            //         type: 'bar',
-            //         data: [5, 20, 36, 10, 10, 20]
-            //     }
-          ]
-      };
-      myChart.setOption(option);
-      var currentStation = "";
-      var stationDict = {};
-      var flag = 0;
-      for (index in data.RECORDS) {
-        var stationMonth = data.RECORDS[index];
-
-        var name = stationMonth["电站名称"].replace(/牛牛充电站/gi, "").replace(/\(/gi, "").replace(/\)/gi, "").replace(/（/gi, "").replace(/）/gi, "");
-        if (name == "测试") continue;
-        if (name in stationDict) {
-          stationDict[name].push(stationMonth);
-        } else {
-          stationDict[name] = [stationMonth];
-        }
-        //{
-        // "电站名称":"江西科旺科技充电站",
-        // "总电量":340.43,
-        // "总费用":503.77,
-        // "日期":"2019-01"
-        // },
-      }
-      //表格赋值
-      var id = 1;
-      var rankPanel = $("#rankList");
-      var trtmp = "";
-      var data_sp = data.RECORDS.splice(0, 10);
-      for (i in data_sp) {
-        id += 1;
-        trtmp += ("<tr><td class='stationId'>" + id + "</td><td class='station'>牛牛新能源" + data_sp[i]['电站名称'] + "</td>" +
-          "<td class='power'>" + data_sp[i]['总电量'] + "</td></tr>");
-      }
-      rankPanel.html(trtmp);
-
-      //给下拉框赋值
-      for (var index in stationDict) {
-        var data_1 = stationDict[index];
-        $(".stationListSelect").append(dom);
-        currentStation = index;
-        var dom = '<option value="#sname#">牛牛充电站#sname#</option>';
-        dom = dom.replace(/#sname#/gi, index);
-      }
-
-      //变化
-      function ChangeData(index) {
-        var totalDL = 0;
-        var totalMoney = 0;
-        var data_2 = stationDict[index];
-        option.xAxis.data = [];
-        option.series[0].data = [];
-        // option.series[1].data=[];
-        for (var thisIndex in data_2) {
-          var thisData = data_2[thisIndex];
-          option.xAxis.data.push(thisData["日期"]);
-          option.series[0].data.push(thisData["总电量"]);
-          totalDL += thisData["总电量"];
-          totalMoney += thisData["总费用"];
-          // option.series[1].data.push(thisData["总费用"]);
-        }
-        var power = Number(totalDL.toFixed(2));
-        var cost = Number(totalMoney.toFixed(2));
-        $(".allPower").html(convertToBigString(power));//总电量
-        $(".allCost").html(convertMoney(cost, '元', true));//总金额
-        myChart.setOption(option);
-      }
-
-      ChangeData(currentStation);
-
-      //下拉框Change事件
-      $(".stationListSelect").change(function () {
-        currentStation = $(this).val();
-        ChangeData(currentStation);
-      });
-
-      function convertToBigString(val) {
-        if (val > 1000 * 1000 * 10) {
-          return (val / (1000 * 1000)).toFixed(2) + 'GWh';
-        }
-        if (val > 1000 * 10) {
-          return (val / 1000).toFixed(2) + 'MWh';
-        }
-
-        return (val).toFixed(2) + 'KWh';
-      }
-
-      function convertMoney(val, preix, isRemain) {
-        if (val > 10000 * 1000) {
-
-          if (isRemain) {
-            return (val / (10000 * 1000)).toFixed(2) + '千万元';
-          }
-          return (val / (10000 * 1000)).toFixed(0) + '千万元';
-        }
-        if (val > 10000 * 10) {
-          if (isRemain) {
-            return (val / 10000).toFixed(2) + '万元';
-          }
-          return (val / 10000).toFixed(0) + '万元';
-        }
-        if (isRemain) {
-          return (val).toFixed(2) + preix;
-        }
-        return (val).toFixed(0) + preix;
-
-      }
-    </script>
+  </script>
 </body>
+
 
 </html>
