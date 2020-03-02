@@ -1,27 +1,37 @@
 var currentStation = "";
 var stationDict = {};
 var myChart = echarts.init(document.getElementById('main'));
+var nowyear=new Date().getFullYear();
+var nowmonth=new Date().getMonth()+1;
 $(document).ready(function () {
-  JsonData();
-  $('#datetimepicker').datetimepicker({
+  DateIn(); //日期控件初始化
+  JsonData(); //给电站及年份下拉框赋值
+  InitChart();  //初始化图表查询
+  CheckInfo();  //点击条件查询图表
+  GetRank (nowyear,nowmonth); //初始化排行榜
+  CheckRank();  //点击条件查询图表
+  GetYesData (); //获取昨日充电排行
+});
+  //日期控件的初始化
+  function DateIn(){
+  $('#datachange').datetimepicker({
     format: 'YYYY-MM',
     locale: moment.locale('zh-cn'),
     defaultDate: new Date(),
-    // onSelect: gotoDate,
+  }).on('change',function(){
+    alert($('#datachange').value())
   })
-  CheckInfo();
-  InitChart();
-});
+}
 
 //整合Json数据并赋值给组件
 function JsonData () {
   //请求数据给下拉框赋值
   $.ajax({
     type: "POST",
-    url: url + '',
+    // url: url + '',
     dataType: "JSON",
     headers: {
-      token: token
+   
     },
     data: {
 
@@ -47,33 +57,6 @@ function JsonData () {
     }
   })
 
-  // for (index in data.RECORDS) {
-  //   var stationMonth = data.RECORDS[index];
-  //   var name = stationMonth["电站名称"].replace(/牛牛充电站/gi, "").replace(/\(/gi, "").replace(/\)/gi, "").replace(/（/gi, "").replace(/）/gi, "");
-  //   if (name == "测试") continue;
-  //   if (name in stationDict) {
-  //     stationDict[name].push(stationMonth);
-  //   } else {
-  //     stationDict[name] = [stationMonth];
-  //   }
-  //   //{
-  //   // "电站名称":"江西科旺科技充电站",
-  //   // "总电量":340.43,
-  //   // "总费用":503.77,
-  //   // "日期":"2019-01"
-  //   // },
-  // }
-
-
-  //给电站下拉框赋值
-  // for (var index in stationDict) {
-  //   $(".stationListSelect").append(dom);
-  //   currentStation = index;
-  //   var dom = '<option value="#sname#">牛牛充电站#sname#</option>';
-  //   dom = dom.replace(/#sname#/gi, index);
-  // }
-  // ChangeData(currentStation);
-
   //给年份下拉框赋值
   var year = new Date().getFullYear();
   var yearhtml = "";
@@ -82,46 +65,24 @@ function JsonData () {
     year--;
   }
   $(".fullYear").append(yearhtml);
-
-
-
-  //给表格赋值
-  var id = 1;
-  var rankPanel = $("#rankList");
-  var trtmp = "";
-  var data_sp = data.RECORDS.splice(0, 10);
-  for (i in data_sp) {
-
-  }
-  rankPanel.html(trtmp);
-
-  //下拉框Change事件
-  // $(".stationListSelect").change(function () {
-  //   currentStation = $(this).val();
-  //   ChangeData(currentStation);
-  // });
-}
-
-//请求图表数据
-function CheckInfo () {
-  $("#checkinfo").on('click', function () {
-    InitChart();
-  })
 }
 
 //初始化图表
 function InitChart () {
+  var StationId= $(".stationListSelect")[0].value;
+  var SearchType= $(".searctype")[0].value;
+  var Year=$(".fullYear")[0].value;
   $.ajax({
     type: "POST",
-    url: url + '',
+    // url: url + '',
     dataType: "JSON",
     headers: {
-      token: token
+      // token: token
     },
     data: {
-      StationId: $(".stationListSelect").value(),
-      SearchType: $(".searctype").value(),
-      Year: $(".fullYear").value()
+      StationId:StationId,
+      SearchType:SearchType,
+      Year:Year
     },
     success: function (response) {
       if (response.isSuccess) {
@@ -198,10 +159,55 @@ function InitChart () {
   })
 }
 
-//给时间选择器赋值并查询排名
-function GetRank () {
+//点击请求图表数据
+function CheckInfo () {
+  $("#checkinfo").on('click', function () {
+    InitChart();
+  })
+}
 
+//初始查询当前月排名
+function GetRank(year,month){
+    $.ajax({
+      type: "POST",
+      url: url + "",
+      data: {
+        Year: year,
+        Month: month
+      },
+      dataType: "json",
+      beforeSend: function (request) {
+        request.setRequestHeader("token", token);
+      },
+      success: function (response) {
+        if (response.isSuccess) {
+          var list = response.body.list;
+          if (list.length > 0) that.orderTableData = list;
+          var rankPanel = $("#rankList");
+          var trtmp = "";
+          for (var i = 0; i < list.length; i++) {
+            trtmp += ("<tr><td class='stationId'>" + data.id + "</td><td class='station'>" + data[i].name + "</td>" +
+              "<td class='power'>" + data[i].power + "</td></tr>");
+          }
+          rankPanel.html(trtmp);
+        }
+      },
+      error: function (jqXHR) {
 
+      }
+    });
+ 
+}
+
+//点击查询当前月排名
+function CheckRank(){
+  $("#checkrank").on('click',function(){
+  // alert($("#datachange")[0].value);
+  var thisdate=$("#datachange")[0].value.split("-");
+  year=thisdate[0];
+  month=thisdate[1];
+  GetRank (year,month);
+  })
 }
 
 //获取昨日充电排行
@@ -210,8 +216,6 @@ function GetYesData () {
     type: "POST",
     url: baseURL + "/Order/GetOrderAllData",
     data: {
-      Year: year,
-      Month: month
     },
     dataType: "json",
     beforeSend: function (request) {
@@ -227,7 +231,7 @@ function GetYesData () {
           trtmp += ("<tr><td class='stationId'>" + data.id + "</td><td class='station'>" + data[i].name + "</td>" +
             "<td class='power'>" + data[i].power + "</td></tr>");
         }
-        rankPanel.html(trtmp);
+        rankYesPanel.html(trtmp);
       }
       else {
 
