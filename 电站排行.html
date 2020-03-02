@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+  <title>电站排行查询</title>
+  <!-- Bootstrap -->
+  <link href="css/bootstrap.css" rel="stylesheet">
+
+  <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
+  <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
+  <!--[if lt IE 9]>
+      <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+  <style type="text/css">
+    body,
+    html {
+      font-size: 16px;
+    }
+
+    #AllTitle {
+      font-size: 1.5rem;
+      text-align: center;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    #border-line {
+      width: 100%;
+      /* border: 1px solid #cccccc; */
+    }
+
+    li {
+      list-style: none;
+    }
+
+    @media (max-width: 768px) {
+      .form-group .col-xs-4 {
+        height: 34px;
+        line-height: 34px;
+      }
+    }
+
+    table>tbody>tr>td {
+      border: 0px;
+    }
+
+    table,
+    tbody,
+    tr {
+      border: 1px solid transparent !important;
+    }
+
+    th,
+    td {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div id="AllTitle">电站月充电量统计查询</div>
+    <div class="row">
+
+      <div class="col-sm-12 col-md-6">
+        <form class="form-horizontal">
+
+          <div class="form-group">
+            <label class="col-xs-4 col-sm-2 col-md-4 col-lg-3 control-label">电站查询：</label>
+            <div class="col-xs-8 col-sm-9 col-md-8 col-lg-9">
+              <select class="form-control stationListSelect">
+                <!-- <option>牛牛充电站</option> -->
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-xs-4 col-sm-2 col-md-4 col-lg-3 control-label">总发电量：</label>
+            <div class="col-xs-8 col-sm-10 col-md-8 col-lg-9">
+              <p class="form-control-static allPower">546.343GWh</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-xs-4 col-sm-2 col-md-4 col-lg-3 control-label">总金额：</label>
+            <div class="col-xs-8 col-sm-10  col-md-8 col-lg-9">
+              <p class="form-control-static allCost">543.45万元</p>
+            </div>
+          </div>
+
+          <div id="main" style="width:100%;height: 500px;"></div>
+        </form>
+      </div>
+
+      <div class="col-sm-12 col-md-6">
+        <div id="border-line">
+          <table class="table table-light">
+            <thead class="thead-light">
+              <tr>
+                <th colspan="3"> 电站月充电量排行</th>
+              </tr>
+              <tr>
+                <th class="span2" width="15%">排名</th>
+                <th class="span8">电站名称</th>
+                <th class="span2" width="15%">充电量</th>
+              </tr>
+            </thead>
+            <tbody id="rankList">
+              <!-- <tr>
+                <td class="stationId">1</td>
+                <td id="station">牛牛新能源</td>
+                <td id="111">50233wh</td>
+              </tr>
+              <tr>-->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+
+      </div>
+      <div class="col-md-6"></div>
+    </div>
+
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/echarts.min.js"></script>
+    <script src="js/data.js">  </script>
+    <script type="text/javascript">
+      // (function pushRank() {
+
+      //   for (var i = 1; i <= 10; i++) {
+
+      //   }
+      // })();
+
+      // 基于准备好的dom，初始化echarts实例
+      var myChart = echarts.init(document.getElementById('main'));
+
+      // 指定图表的配置项和数据
+      var option = {
+        title: {
+          text: '电站每月电量'
+        },
+        tooltip: {},
+        legend: {
+          data: ['电量', '费用']
+        },
+        xAxis: {
+          data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
+        },
+        yAxis: {
+          type: 'value',
+          name: '单位:kWh'
+        },
+        series:
+          [
+            {
+              label: {
+
+                show: false,
+                position: 'top'
+              },
+              barMaxWidth: 40,
+              name: '电量',
+              type: 'bar',
+              data: [5, 20, 36, 10, 10, 20]
+            }
+            //     ,
+            //     {
+            //         label: {
+            //     show: true,
+            //     position: 'top'
+            // },
+            //         barMaxWidth :40,
+            //         name: '费用',
+            //         type: 'bar',
+            //         data: [5, 20, 36, 10, 10, 20]
+            //     }
+          ]
+      };
+      myChart.setOption(option);
+      var currentStation = "";
+      var stationDict = {};
+      var flag = 0;
+      for (index in data.RECORDS) {
+        var stationMonth = data.RECORDS[index];
+
+        var name = stationMonth["电站名称"].replace(/牛牛充电站/gi, "").replace(/\(/gi, "").replace(/\)/gi, "").replace(/（/gi, "").replace(/）/gi, "");
+        if (name == "测试") continue;
+        if (name in stationDict) {
+          stationDict[name].push(stationMonth);
+        } else {
+          stationDict[name] = [stationMonth];
+        }
+        //{
+        // "电站名称":"江西科旺科技充电站",
+        // "总电量":340.43,
+        // "总费用":503.77,
+        // "日期":"2019-01"
+        // },
+      }
+      //表格赋值
+      var id = 1;
+      var rankPanel = $("#rankList");
+      var trtmp = "";
+      var data_sp = data.RECORDS.splice(0, 10);
+      for (i in data_sp) {
+        id += 1;
+        trtmp += ("<tr><td class='stationId'>" + id + "</td><td class='station'>牛牛新能源" + data_sp[i]['电站名称'] + "</td>" +
+          "<td class='power'>" + data_sp[i]['总电量'] + "</td></tr>");
+      }
+      rankPanel.html(trtmp);
+
+      //给下拉框赋值
+      for (var index in stationDict) {
+        var data_1 = stationDict[index];
+        $(".stationListSelect").append(dom);
+        currentStation = index;
+        var dom = '<option value="#sname#">牛牛充电站#sname#</option>';
+        dom = dom.replace(/#sname#/gi, index);
+      }
+
+      //变化
+      function ChangeData(index) {
+        var totalDL = 0;
+        var totalMoney = 0;
+        var data_2 = stationDict[index];
+        option.xAxis.data = [];
+        option.series[0].data = [];
+        // option.series[1].data=[];
+        for (var thisIndex in data_2) {
+          var thisData = data_2[thisIndex];
+          option.xAxis.data.push(thisData["日期"]);
+          option.series[0].data.push(thisData["总电量"]);
+          totalDL += thisData["总电量"];
+          totalMoney += thisData["总费用"];
+          // option.series[1].data.push(thisData["总费用"]);
+        }
+        $(".allPower").html(convertToBigString(totalDL.toFixed(2)));//总电量
+        $(".allCost").html(convertMoney(totalMoney.toFixed(2), '元', true));//总金额
+        myChart.setOption(option);
+      }
+
+      ChangeData(currentStation);
+
+      //下拉框Change事件
+      $(".stationListSelect").change(function () {
+        currentStation = $(this).val();
+        ChangeData(currentStation);
+      });
+
+      function convertToBigString(val) {
+        if (val > 1000 * 1000 * 10) {
+          return (val / (1000 * 1000)).toFixed(2) + 'GWh';
+        }
+        if (val > 1000 * 10) {
+          return (val / 1000).toFixed(2) + 'MWh';
+        }
+
+        return (val).toFixed(2) + 'KWh';
+      }
+
+      function convertMoney(val, preix, isRemain) {
+        if (val > 10000 * 1000) {
+
+          if (isRemain) {
+            return (val / (10000 * 1000)).toFixed(2) + '千万元';
+          }
+          return (val / (10000 * 1000)).toFixed(0) + '千万元';
+        }
+        if (val > 10000 * 10) {
+          if (isRemain) {
+            return (val / 10000).toFixed(2) + '万元';
+          }
+          return (val / 10000).toFixed(0) + '万元';
+        }
+        if (isRemain) {
+          return (val).toFixed(2) + preix;
+        }
+        return (val).toFixed(0) + preix;
+
+      }
+    </script>
+</body>
+
+</html>
