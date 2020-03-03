@@ -178,10 +178,6 @@ function InitChart () {
             everydate.push(list[m].monthNum);
             PowerY.push(list[m].totalDL);
           }
-          // 指定图表的配置项和数据
-          // $.each(data, function (index, item) {
-          //   moneyY.push(item.consumePrice.toString());
-          // });
           var option = {
             title: {
               text: '电站每月电量'
@@ -225,10 +221,10 @@ function InitChart () {
           myChart.setOption(option);
           myChart.on('click', function (params) {
             console.log(params.name);
-            var stationName = $("#stationListSelect").val();
-            var year = $(".fullYear").value();
+            var StationId = $("#stationListSelect").val();
+            var year = $(".fullYear").val();
             var month = params.name;
-            location.href = "http://www.ba.com?stationName=" + stationName + "&year=" + year + "&month=" + month;
+            location.href = "http://www.ba.com?StationId=" + StationId + "&year=" + year + "&month=" + month;
           });
           window.addEventListener("resize", function () {
             myChart.resize();   //myChart指自己定义的echartsDom对象
@@ -348,30 +344,6 @@ function GetYesData () {
   });
 
 }
-
-//图表数据变化
-// function ChangeData (index) {
-//   var op = InitChart();
-//   var totalDL = 0;
-//   var totalMoney = 0;
-//   var data_2 = stationDict[index];
-//   op.xAxis.data = [];
-//   op.series[0].data = [];
-//   // option.series[1].data=[];
-//   for (var thisIndex in data_2) {
-//     var thisData = data_2[thisIndex];
-//     op.xAxis.data.push(thisData["日期"]);
-//     op.series[0].data.push(thisData["总电量"]);
-//     totalDL += thisData["总电量"];
-//     totalMoney += thisData["总费用"];
-//     // option.series[1].data.push(thisData["总费用"]);
-//   }
-
-
-//   myChart.setOption(op);
-// }
-
-
 
 //单位转换
 function convertToBigString (val) {
