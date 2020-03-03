@@ -1,0 +1,99 @@
+body,
+html {
+  font-size: 16px;
+}
+
+#AllTitle {
+  font-size: 0.2rem;
+  text-align: center;
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+  color: #5bc0de;
+  text-shadow: 2px 2px 2px #b5d9fdf0;
+  background: #edf5ff;
+  padding: 10px;
+}
+
+label {
+  font-size: 0.1rem;
+}
+
+#border-line {
+  width: 100%;
+  /* border: 1px solid #cccccc; */
+}
+
+li {
+  list-style: none;
+}
+
+@media (max-width: 768px) {
+  #AllTitle {
+    font-size: 0.4rem;
+  }
+  .form-group .col-xs-4 {
+    height: 34px;
+    line-height: 34px;
+    font-size: 13px;
+  }
+
+  .form-group .col-xs-3 {
+    width: 30%;
+    line-height: 34px;
+  }
+
+  .col-xs-8,
+  .col-xs-6 {
+    padding-left: 0 !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .form-group .col-xs-3 {
+    width: 16.66666667%;
+    /* line-height: 34px; */
+  }
+}
+
+
+.mytable thead {
+  background-color: #edf5ff;
+}
+
+.mytable>tbody>tr>td {
+  border: 0px; 
+  background: #f0f7ff59;
+}
+
+.mytable>tbody,
+tr {
+  border: 1px solid transparent !important;
+  text-align: center;
+}
+
+.mytable>thead>tr>th {
+  vertical-align: bottom;
+  border-bottom:3px solid #fdfdfd;
+  text-align: center;
+}
+
+.form-control[readonly],
+fieldset[disabled] .form-control {
+  background-color: #eee0;
+  opacity: 1;
+}
+/* #border-line .form-horizontal .form-group {
+  margin-right: 0px; 
+  margin-left: 0px;
+} */
+.rowlist th:first-child {
+  color: #f9a433;
+}
+
+.rowlist th:nth-child(2) {
+  color: #5bc0de;
+}
+
+.rowlist th:last-child {
+  color: #37bd6d;
+}
