@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  var url = "http://192.168.1.124:7878";
+  var url = "http://192.168.1.181:7878";
 
   var loc = location.href;//获取整个跳转地址内容，其实就是你传过来的整个地址字符串
   console.log("我的地址" + loc);

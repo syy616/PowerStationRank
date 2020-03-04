@@ -1,7 +1,7 @@
 ﻿var myChart = echarts.init(document.getElementById('main'));
 var nowyear = new Date().getFullYear();
 var nowmonth = new Date().getMonth() + 1;
-var url = "http://192.168.1.124:7878";
+var url = "http://192.168.1.181:7878";
 $(document).ready(function () {
   $("#main").css("display", "none");  //图表先隐藏，请求成功再show
   $('#searctype').selectpicker('refresh');   //使用refresh方法更新UI以匹配新状态。
@@ -24,8 +24,6 @@ function DateIn () {
     format: 'YYYY-MM',
     locale: moment.locale('zh-cn'),
     defaultDate: new Date(),
-  }).on('change', function () {
-    alert($('#datachange').value())
   })
 }
 
@@ -197,6 +195,7 @@ function InitChart () {
             // },
             grid: {
               top: '25%',
+              left: '12%'
             },
             tooltip: {
               show: true,
@@ -208,31 +207,49 @@ function InitChart () {
             },
             xAxis: {
               name: '月份',
-              triggerEvent: true,
               data: everydate,
               nameTextStyle: {
                 padding: [0, 0, 0, -5]
               }
             },
             yAxis: {
-              triggerEvent: true,
+
               type: 'value',
-              name: 'kWh'
+              name: 'kWh',
+              axisLabel: {
+                //            	inside:true
+                rotate: 45
+              },
+              splitLine: {
+                lineStyle: {
+                  color: 'rgb(34,57,91)'
+                }
+              }
             },
             series:
               [
                 {
                   label: {
                     show: true,
-                    position: 'top'
+                    position: 'top',
+                    color: '#666'
                   },
                   itemStyle: {
-                    color: '#5bc0de'
+                    color: '#5bc0de',
+                    opacity: 8
                   },
                   barMaxWidth: 40,
                   name: '电量',
                   type: 'bar',
-                  data: PowerY
+                  data: PowerY,
+                  markLine: {
+                    lineStyle: {
+                      normal: {
+                        color: '#000000',
+                        width: 5
+                      }
+                    }
+                  }
                 }
               ]
           };
@@ -297,9 +314,9 @@ function GetRank (year, month, type) {
           rankPanel.html(trtmp);
         }
         else {
-          trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无当月数据~</td><td class='power'></td></tr>")
+          trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无该月数据~</td><td class='power'></td></tr>")
           rankPanel.html(trtmp);
-          toastr.warning("当月充电排行没有数据~");
+          toastr.warning("该月充电排行没有数据~");
         }
       }
       else {
