@@ -187,9 +187,13 @@ function InitChart () {
                 fontSize: "15"
               }
             },
+            // toolbox: {
+            //   feature: {
+            //     saveAsImage: {}
+            //   }
+            // },
             grid: {
               top: '25%',
-              left: '8%',
             },
             tooltip: {
               show: true,
@@ -200,20 +204,23 @@ function InitChart () {
               data: ['电量']
             },
             xAxis: {
-              name: '单位:月份',
+              name: '月份',
               triggerEvent: true,
-              data: everydate
+              data: everydate,
+              nameTextStyle: {
+                padding: [0, 0, 0, -5]
+              }
             },
             yAxis: {
               triggerEvent: true,
               type: 'value',
-              name: '单位:kWh'
+              name: 'kWh'
             },
             series:
               [
                 {
                   label: {
-                    show: false,
+                    show: true,
                     position: 'top'
                   },
                   itemStyle: {
