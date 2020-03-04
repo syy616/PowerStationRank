@@ -1,15 +1,13 @@
-var currentStation = "";
-var stationDict = {};
 var myChart = echarts.init(document.getElementById('main'));
 var nowyear = new Date().getFullYear();
 var nowmonth = new Date().getMonth() + 1;
-var url = "http://192.168.1.82:7878";
+var url = "http://192.168.1.124:7878";
 $(document).ready(function () {
-  $("#main").css("display", "none");
+  $("#main").css("display", "none");  //图表先隐藏，请求成功再show
   DateIn(); //日期控件初始化
-  toar();   //提示框控件设置
+  toar();   //提示框控件初始化
   ChangeYear();//年份赋值
-  GetStation(); //给电站及年份下拉框赋值
+  GetStation(); //给可搜索电站下拉框赋值
   ChangeStation(); //根据类型切换电站
   CheckInfo();  //点击条件查询图表
   GetRank(nowyear, nowmonth, 1); //初始化排行榜
@@ -30,7 +28,6 @@ function DateIn () {
 
 //弹出框插件初始化
 function toar () {
-
   toastr.options = {
     closeButton: false,                                            // 是否显示关闭按钮，（提示框右上角关闭按钮）
     debug: false,                                                    // 是否使用deBug模式
@@ -39,14 +36,13 @@ function toar () {
     onclick: null,                                                     // 点击消息框自定义事件 
     showDuration: "300",                                      // 显示动画的时间
     hideDuration: "1000",                                     //  消失的动画时间
-    timeOut: "1500",                                             //  自动关闭超时时间 
+    timeOut: "2000",                                             //  自动关闭超时时间 
     extendedTimeOut: "1000",                             //  加长展示时间
     showEasing: "swing",                                     //  显示时的动画缓冲方式
     hideEasing: "linear",                                       //   消失时的动画缓冲方式
     showMethod: "fadeIn",                                   //   显示时的动画方式
     hideMethod: "fadeOut"                                   //   消失时的动画方式
   };
-
 }
 
 //年份赋值
@@ -93,11 +89,11 @@ function GetStation () {
         InitChart();  //初始化图表查询
       }
       else {
-        toastr.error(response.errorMessage)
+        toastr.error("抱歉，与服务器连接失败！");
       }
     },
     error: function () {
-      toastr.warning("与服务连接失败！");
+      toastr.error("抱歉，与服务器连接失败！");
     }
   })
 
@@ -139,11 +135,11 @@ function GetTotalDl () {
         $(".allCost").val(convertMoney(cost, ' 元', true));//总金额                  
       }
       else {
-        toastr.error(response.errorMessage)
+        toastr.error("抱歉，与服务器连接失败！");
       }
     },
     error: function () {
-      toastr.warning("与服务连接失败！");
+      toastr.error("抱歉，与服务器连接失败！");
     }
   })
 }
@@ -174,13 +170,26 @@ function InitChart () {
           var list = data.totalDlList;
           var everydate = [];
           var PowerY = [];
+          var sbtitle = $("#stationListSelect").next('button')[0].title
           for (var m = 0; m < list.length; m++) {
             everydate.push(list[m].monthNum);
             PowerY.push(list[m].totalDL);
           }
           var option = {
             title: {
-              text: '电站每月电量'
+              text: '电站每月电量',
+              subtext: sbtitle,
+              padding: [30, 20, 10, 25],
+              margin: 10,
+              subtextStyle: {
+                color: '#666',
+                fontWeight: "bold",
+                fontSize: "15"
+              }
+            },
+            grid: {
+              top: '25%',
+              left: '8%',
             },
             tooltip: {
               show: true,
@@ -222,9 +231,10 @@ function InitChart () {
           myChart.on('click', function (params) {
             console.log(params.name);
             var StationId = $("#stationListSelect").val();
+            var StationName = $("#stationListSelect").next('button')[0].title;
             var year = $(".fullYear").val();
             var month = params.name;
-            location.href = "http://www.ba.com?StationId=" + StationId + "&year=" + year + "&month=" + month;
+            location.href = "./everydetails.html?StationName=" + StationName + "&StationId=" + StationId + "&year=" + year + "&month=" + month;
           });
           window.addEventListener("resize", function () {
             myChart.resize();   //myChart指自己定义的echartsDom对象
@@ -234,11 +244,11 @@ function InitChart () {
       }
       else {
         $("#main").css("display", "none");
-        alert("数据获取失败")
+        toastr.error("抱歉，与服务器连接失败！");
       }
     },
     error: function () {
-      alert("服务器连接失败")
+      toastr.error("抱歉，与服务器连接失败！");
     }
   })
 }
@@ -277,17 +287,19 @@ function GetRank (year, month, type) {
           rankPanel.html(trtmp);
         }
         else {
-          trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无数据~</td><td class='power'></td></tr>")
+          trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无当月数据~</td><td class='power'></td></tr>")
           rankPanel.html(trtmp);
-          toastr.error("暂无数据")
+          toastr.warning("当月充电排行没有数据~");
         }
+      }
+      else {
+        toastr.error("抱歉，与服务器连接失败！");
       }
     },
     error: function (jqXHR) {
-      trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无数据~</td><td class='power'></td></tr>")
+      trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无当月数据~</td><td class='power'></td></tr>")
       rankPanel.html(trtmp);
-      toastr.error("暂无数据")
-      toastr.warning("与服务连接失败！");
+      toastr.error("抱歉，与服务器连接失败！");
     }
   });
 
@@ -321,31 +333,34 @@ function GetYesData () {
     dataType: "json",
     success: function (response) {
       if (response.isSuccess) {
-        var list = response.body.list; {
+        var list = response.body.list;
+        if (list.length > 0) {
           for (var i = 0; i < list.length; i++) {
             trtmp += ("<tr><td class='stationId'>" + Number(i + 1) + "</td><td class='station'>" + list[i].stationName + "</td>" +
               "<td class='power'>" + convertToBigString(list[i].totalDL) + "</td></tr>");
           }
+          rankYesPanel.html(trtmp);
         }
-        rankYesPanel.html(trtmp);
+        else {
+          trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无昨日数据~</td><td class='power'></td></tr>")
+          rankYesPanel.html(trtmp);
+          toastr.warning("昨日充电排行没有数据~");
+        }
       }
       else {
-        trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无数据~</td><td class='power'></td></tr>")
-        rankPanel.html(trtmp);
-        toastr.error("暂无数据")
+        toastr.error("抱歉，与服务器连接失败！");
       }
     },
     error: function (jqXHR) {
-      trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无数据~</td><td class='power'></td></tr>")
-      rankPanel.html(trtmp);
-      toastr.error("暂无数据")
-      toastr.warning("与服务连接失败！");
+      trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无昨日数据~</td><td class='power'></td></tr>")
+      rankYesPanel.html(trtmp);
+      toastr.error("抱歉，与服务器连接失败！");
     }
   });
 
 }
 
-//单位转换
+//电量单位转换
 function convertToBigString (val) {
   if (val > 1000 * 1000 * 10) {
     return (val / (1000 * 1000)).toFixed(2) + ' GWh';
@@ -356,6 +371,7 @@ function convertToBigString (val) {
   return (val).toFixed(2) + ' KWh';
 }
 
+//金钱单位转换
 function convertMoney (val, preix, isRemain) {
   if (val > 10000 * 1000) {
 
