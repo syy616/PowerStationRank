@@ -4,24 +4,18 @@ var nowmonth = new Date().getMonth() + 1;
 var url = "http://192.168.1.181:7878";
 $(document).ready(function () {
   $("#main").css("display", "none");  //图表先隐藏，请求成功再show
-  $('#searctype').selectpicker('refresh');   //使用refresh方法更新UI以匹配新状态。
-  document.getElementById("searctype").options.selectedIndex = 0; //默认让类型选择框选择第一个，适用于回退重新赋值
-  $('#searctype').selectpicker('render');   //render方法强制重新渲染引导程序 - 选择ui。
   DateIn(); //日期控件初始化
   toar();   //提示框控件初始化
   ChangeYear();//年份赋值
-  GetStation(); //给可搜索电站下拉框赋值
-  ChangeStation(); //根据类型切换电站
   CheckInfo();  //点击条件查询图表
-  GetRank(nowyear, nowmonth, 1); //初始化排行榜
+  GetRank(nowyear, 1); //初始化排行榜
   CheckRank();  //点击条件查询图表
-  GetYesData(); //获取昨日充电排行
 });
 
 //日期控件的初始化
 function DateIn () {
   $('#datachange').datetimepicker({
-    format: 'YYYY-MM',
+    format: 'YYYY',
     locale: moment.locale('zh-cn'),
     defaultDate: new Date(),
   })
@@ -57,64 +51,9 @@ function ChangeYear () {
   $(".fullYear").append(yearhtml);
 }
 
-//根据类型请求电站赋值给组件
-function GetStation () {
-  //请求数据给电站下拉框赋值
-  var type = $("#searctype")[0].value;
-  $.ajax({
-    type: "POST",
-    url: url + '/StationRelevanceManage/GetStationListData',
-    dataType: "json",
-    headers: {
-      token: "123"
-    },
-    data: {
-      type: type
-    },
-    success: function (response) {
-      if (response.isSuccess) {
-        var res = response.body;//接口返回的内容，body里面是请求的内容                            
-        if (res.length > 0) {
-          $("#stationListSelect").empty();
-          var dom = " ";
-          for (var i = 0; i < res.length; i++) {
-            dom += '<option value="' + res[i].indexId + '">' + res[i].stationName + '</option>';
-          }
-          $("#stationListSelect").append(dom);
-          //使用refresh方法更新UI以匹配新状态。
-          $('#stationListSelect').selectpicker('refresh');
-          //render方法强制重新渲染引导程序 - 选择ui。
-          $('#stationListSelect').selectpicker('render');
-        }
-        GetTotalDl();
-        InitChart();  //初始化图表查询
-      }
-      else {
-        toastr.error("抱歉，与服务器连接失败！");
-      }
-    },
-    error: function () {
-      toastr.error("抱歉，与服务器连接失败！");
-    }
-  })
-
-}
-
-//点击按钮切换电站
-function ChangeStation () {
-  $("#searctype").on('changed.bs.select', function (e) {
-    GetStation();
-  })
-  //点击电站自动show柱状图
-  // $("#stationListSelect").on('changed.bs.select', function (e) {
-  //   GetTotalDl();
-  //   InitChart();
-  // })
-}
-
-//根据电站Id获取总电量和总金额
+//根据类型、年份获取总电量和总金额
 function GetTotalDl () {
-  var StationId = $("#stationListSelect")[0].value;
+  var type = $("#searctype")[0].value;
   var year = $(".fullYear")[0].value;
   $.ajax({
     type: "POST",
@@ -124,7 +63,7 @@ function GetTotalDl () {
       token: "123"
     },
     data: {
-      StationId: StationId,
+      type: type,
       year: year
     },
     success: function (response) {
@@ -147,8 +86,8 @@ function GetTotalDl () {
 
 //初始化图表
 function InitChart () {
-  var StationId = $("#stationListSelect")[0].value;
   var Year = $(".fullYear")[0].value;
+  var Type = $("#searctype")[0].value;
   $.ajax({
     type: "POST",
     url: url + '/StationRelevanceManage/GetStationMonthTotalDLByYearList',
@@ -157,7 +96,7 @@ function InitChart () {
       token: "123"
     },
     data: {
-      StationId: StationId,
+      Type: Type,
       Year: Year
     },
     success: function (response) {
@@ -244,14 +183,17 @@ function InitChart () {
                   name: '电量',
                   type: 'bar',
                   data: PowerY,
-                  markLine: {
-                    lineStyle: {
-                      normal: {
-                        color: '#000000',
-                        width: 5
-                      }
-                    }
-                  }
+                  itemStyle: {
+                    color: new echarts.graphic.LinearGradient(
+                      0, 1, 0, 0,
+                      [
+                        { offset: 1, color: '#b9ecfb' },
+                        { offset: 0.5, color: '#16bef0' },
+                        { offset: 0, color: '#0085ac' },
+
+                      ]
+                    )
+                  },
                 }
               ]
           };
@@ -260,11 +202,10 @@ function InitChart () {
           myChart.setOption(option);
           myChart.on('click', function (params) {
             console.log(params.name);
-            var StationId = $("#stationListSelect").val();
-            var StationName = $("#stationListSelect").next('button')[0].title;
+            var type = $("#searctype")[0].value;
             var year = $(".fullYear").val();
             var month = params.name;
-            location.href = "./everydetails.html?StationName=" + StationName + "&StationId=" + StationId + "&year=" + year + "&month=" + month;
+            location.href = "./everydetails.html?type=" + type + "&year=" + year + "&month=" + month;
           });
           window.addEventListener("resize", function () {
             myChart.resize();   //myChart指自己定义的echartsDom对象
@@ -291,8 +232,8 @@ function CheckInfo () {
   })
 }
 
-//初始查询当前月排名
-function GetRank (year, month, type) {
+//初始查询当年排名
+function GetRank (year, type) {
   var rankPanel = $("#rankList");
   var trtmp = "";
   $.ajax({
@@ -302,7 +243,6 @@ function GetRank (year, month, type) {
       pageIndex: 1,
       pageCount: 10,
       year: year,
-      Month: month,
       Type: type
     },
     dataType: "json",
@@ -317,9 +257,9 @@ function GetRank (year, month, type) {
           rankPanel.html(trtmp);
         }
         else {
-          trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无该月数据~</td><td class='power'></td></tr>")
+          trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无该年数据~</td><td class='power'></td></tr>")
           rankPanel.html(trtmp);
-          toastr.warning("该月充电排行没有数据~");
+          toastr.warning("该年充电排行没有数据~");
         }
       }
       else {
@@ -327,7 +267,7 @@ function GetRank (year, month, type) {
       }
     },
     error: function (jqXHR) {
-      trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无当月数据~</td><td class='power'></td></tr>")
+      trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无该年数据~</td><td class='power'></td></tr>")
       rankPanel.html(trtmp);
       toastr.error("抱歉，与服务器连接失败！");
     }
@@ -338,56 +278,10 @@ function GetRank (year, month, type) {
 //点击查询当前月排名
 function CheckRank () {
   $("#checkrank").on('click', function () {
-    // alert($("#datachange")[0].value);
-    var thisdate = $("#datachange")[0].value.split("-"),
-      year = thisdate[0],
-      month = thisdate[1],
+    var thisdate = $("#datachange")[0].value,
       type = $(".searctype2")[0].value;
-    GetRank(year, month, type);
+    GetRank(thisdate, type);
   })
-}
-
-//获取昨日充电排行
-function GetYesData () {
-  var type = $(".searctype2")[0].value;
-  var rankYesPanel = $("#rankYesList");
-  var trtmp = "";
-  $.ajax({
-    type: "POST",
-    url: url + "/StationRelevanceManage/GetAllStationTotalDByYesterdayList",
-    data: {
-      pageIndex: 1,
-      pageCount: 10,
-      Type: type
-    },
-    dataType: "json",
-    success: function (response) {
-      if (response.isSuccess) {
-        var list = response.body.list;
-        if (list.length > 0) {
-          for (var i = 0; i < list.length; i++) {
-            trtmp += ("<tr><td class='stationId'>" + Number(i + 1) + "</td><td class='station'>" + list[i].stationName + "</td>" +
-              "<td class='power'>" + convertToBigString(list[i].totalDL) + "</td></tr>");
-          }
-          rankYesPanel.html(trtmp);
-        }
-        else {
-          trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无昨日数据~</td><td class='power'></td></tr>")
-          rankYesPanel.html(trtmp);
-          toastr.warning("昨日充电排行没有数据~");
-        }
-      }
-      else {
-        toastr.error("抱歉，与服务器连接失败！");
-      }
-    },
-    error: function (jqXHR) {
-      trtmp = ("<tr><td class='stationId'></td><td class='station'>暂无昨日数据~</td><td class='power'></td></tr>")
-      rankYesPanel.html(trtmp);
-      toastr.error("抱歉，与服务器连接失败！");
-    }
-  });
-
 }
 
 //电量单位转换
