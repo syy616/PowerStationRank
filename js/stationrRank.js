@@ -1,7 +1,7 @@
 ﻿var myChart = echarts.init(document.getElementById('main'));
 var nowyear = new Date().getFullYear();
 var nowmonth = new Date().getMonth() + 1;
-var url = "http://192.168.1.181:7878";
+var url = "http://192.168.1.105:7878";
 $(document).ready(function () {
   $("#main").css("display", "none");  //图表先隐藏，请求成功再show
   $('#searctype').selectpicker('refresh');   //使用refresh方法更新UI以匹配新状态。
@@ -191,7 +191,7 @@ function InitChart () {
             toolbox: {
               feature: {
                 magicType: { show: true, type: ['line', 'bar'] },
-                restore: { show: true },
+                // restore: { show: true },
                 saveAsImage: { show: true }
               }
             },

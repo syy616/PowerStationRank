@@ -1,15 +1,17 @@
 ﻿var myChart = echarts.init(document.getElementById('main'));
 var nowyear = new Date().getFullYear();
 var nowmonth = new Date().getMonth() + 1;
-var url = "http://192.168.1.181:7878";
+var url = "http://192.168.1.105:7878";
 $(document).ready(function () {
   $("#main").css("display", "none");  //图表先隐藏，请求成功再show
   DateIn(); //日期控件初始化
   toar();   //提示框控件初始化
   ChangeYear();//年份赋值
+  GetTotalDl();//初始查电量和金额
+  InitChart();//初始查图标
   CheckInfo();  //点击条件查询图表
   GetRank(nowyear, 1); //初始化排行榜
-  CheckRank();  //点击条件查询图表
+  CheckRank();  //点击条件查询排行榜
 });
 
 //日期控件的初始化
@@ -57,7 +59,7 @@ function GetTotalDl () {
   var year = $(".fullYear")[0].value;
   $.ajax({
     type: "POST",
-    url: url + '/StationRelevanceManage/GetStationTotalDLByYearStationIdResult',
+    url: url + '/StationRelevanceManage/GetAllStationTotalDataByTypeYearResult',
     dataType: "json",
     headers: {
       token: "123"
@@ -90,14 +92,14 @@ function InitChart () {
   var Type = $("#searctype")[0].value;
   $.ajax({
     type: "POST",
-    url: url + '/StationRelevanceManage/GetStationMonthTotalDLByYearList',
+    url: url + '/StationRelevanceManage/GetStationMonthTotalDLByTypeYearList',
     dataType: "json",
     headers: {
       token: "123"
     },
     data: {
-      Type: Type,
-      Year: Year
+      type: Type,
+      year: Year
     },
     success: function (response) {
       if (response.isSuccess) {
@@ -110,15 +112,15 @@ function InitChart () {
           var list = data.totalDlList;
           var everydate = [];
           var PowerY = [];
-          var sbtitle = $("#stationListSelect").next('button')[0].title
+          // var sbtitle = $("#stationListSelect").next('button')[0].title
           for (var m = 0; m < list.length; m++) {
             everydate.push(list[m].monthNum);
             PowerY.push(list[m].totalDL);
           }
           var option = {
             title: {
-              text: '电站每月电量',
-              subtext: sbtitle,
+              text: '所有电站本年每月电量',
+              subtext: "(" + Year + "年)",
               padding: [30, 20, 10, 25],
               margin: 10,
               subtextStyle: {
@@ -130,7 +132,7 @@ function InitChart () {
             toolbox: {
               feature: {
                 magicType: { show: true, type: ['line', 'bar'] },
-                restore: { show: true },
+                // restore: { show: true },
                 saveAsImage: { show: true }
               }
             },
@@ -238,12 +240,12 @@ function GetRank (year, type) {
   var trtmp = "";
   $.ajax({
     type: "POST",
-    url: url + "/StationRelevanceManage/GetAllStationTotalDByYearMonthList",
+    url: url + "/StationRelevanceManage/GetAllStationTotalDByYearList",
     data: {
       pageIndex: 1,
       pageCount: 10,
       year: year,
-      Type: type
+      type: type
     },
     dataType: "json",
     success: function (response) {
@@ -275,7 +277,7 @@ function GetRank (year, type) {
 
 }
 
-//点击查询当前月排名
+//点击查询当年排名
 function CheckRank () {
   $("#checkrank").on('click', function () {
     var thisdate = $("#datachange")[0].value,
