@@ -37,7 +37,7 @@ function toar () {
     onclick: null,                                                     // 点击消息框自定义事件 
     showDuration: "300",                                      // 显示动画的时间
     hideDuration: "1000",                                     //  消失的动画时间
-    timeOut: "2000",                                             //  自动关闭超时时间 
+    timeOut: "2500",                                             //  自动关闭超时时间 
     extendedTimeOut: "1000",                             //  加长展示时间
     showEasing: "swing",                                     //  显示时的动画缓冲方式
     hideEasing: "linear",                                       //   消失时的动画缓冲方式
@@ -178,8 +178,8 @@ function InitChart () {
           }
           var option = {
             title: {
-              text: '电站每月电量',
-              subtext: sbtitle,
+              text: Year + '年该电站每月发电量',
+              subtext: sbtitle + "\n点击每月柱状图可查看该月每日情况",
               padding: [30, 20, 10, 25],
               margin: 10,
               subtextStyle: {
@@ -191,8 +191,8 @@ function InitChart () {
             toolbox: {
               feature: {
                 magicType: { show: true, type: ['line', 'bar'] },
-                // restore: { show: true },
-                saveAsImage: { show: true }
+
+                saveAsImage: {}
               }
             },
             grid: {
@@ -212,7 +212,8 @@ function InitChart () {
               data: everydate,
               nameTextStyle: {
                 padding: [0, 0, 0, -5]
-              }
+              },
+              triggerEvent: true
             },
             yAxis: {
 
@@ -237,8 +238,15 @@ function InitChart () {
                     color: '#666'
                   },
                   itemStyle: {
-                    color: '#5bc0de',
-                    opacity: 8
+                    color: new echarts.graphic.LinearGradient(
+                      0, 1, 0, 0,
+                      [
+                        { offset: 1, color: '#b9ecfb' },
+                        { offset: 0.7, color: '#5bc0de' },
+                        { offset: 0, color: '#0085ac' },
+
+                      ]
+                    )
                   },
                   barMaxWidth: 40,
                   name: '电量',
@@ -256,15 +264,19 @@ function InitChart () {
               ]
           };
 
-
-          myChart.setOption(option);
+          myChart.setOption(option, true);
           myChart.on('click', function (params) {
-            console.log(params.name);
             var StationId = $("#stationListSelect").val();
             var StationName = $("#stationListSelect").next('button')[0].title;
             var year = $(".fullYear").val();
-            var month = params.name;
-            location.href = "./everydetails.html?StationName=" + StationName + "&StationId=" + StationId + "&year=" + year + "&month=" + month;
+            if (params.componentType == "xAxis") {
+              var month = params.value;
+              location.href = "./everydetails.html?StationName=" + StationName + "&StationId=" + StationId + "&year=" + year + "&month=" + month;
+            } else {
+              console.log(params.name);
+              var month = params.name;
+              location.href = "./everydetails.html?StationName=" + StationName + "&StationId=" + StationId + "&year=" + year + "&month=" + month;
+            }
           });
           window.addEventListener("resize", function () {
             myChart.resize();   //myChart指自己定义的echartsDom对象

@@ -4,15 +4,17 @@ html {
 }
 
 #AllTitle {
-  /* font-size: 0.2rem; */
-  font-size: 2rem;
+  font-size: 0.2rem;
+  /* font-size: 2rem; */
 
   text-align: center;
-  /* margin-top: 0.2rem; */
-  margin-top: 2rem;
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+  /* margin-top: 2rem; */
 
   /* margin-bottom: 0.2rem; */
-  margin-bottom: 2rem;
+  /* margin-bottom: 2rem; */
 
   color: #5bc0de;
   text-shadow: 2px 2px 2px #b5d9fdf0;
@@ -22,7 +24,7 @@ html {
 
 label {
   /* font-size: 0.1rem; */
-    font-size: 1rem;
+    /* font-size: 1rem; */
 }
 
 #border-line {
@@ -35,9 +37,9 @@ li {
 }
 
 @media (max-width: 768px) {
-  /* #AllTitle {
+  #AllTitle {
     font-size: 0.4rem;
-  } */
+  }
   .form-group .col-xs-4 {
     height: 34px;
     line-height: 34px;

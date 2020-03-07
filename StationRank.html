@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
   <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
   <title>电站排行查询</title>
   <!-- Bootstrap -->
@@ -23,7 +23,7 @@
 
 <body>
   <div class="container-fluid">
-    <div id="AllTitle">电站月充电量统计查询</div>
+    <div id="AllTitle">电站月发电量统计查询</div>
     <div class="row">
 
       <div class="col-sm-12 col-md-6">
@@ -71,9 +71,11 @@
               <input class="form-control allCost" type="text" name="allCost" readonly>
             </div>
           </div>
-          <div class="form-group" style="margin-bottom: 30px;margin-top: 20px;padding-right: 15px;">
-            <label class="col-xs-4 col-sm-3 col-md-4 col-lg-3 control-label"></label>
-            <button type="button" class="btn btn-info" id="checkinfo" style="width:30%;margin-left: 18px;">查 询</button>
+          <div class="form-group" style="margin-bottom: 30px;margin-top: 20px;padding-right: 15px;text-align: center;">
+            <button type="button" class="btn btn-info" id="checkinfo" style="margin-left: 18px;width: 100px;">查
+              询</button>
+            <a type="button" class="btn btn-info" id="GoAll" style="margin-left: 18px;"
+              href="./AllStationRank.html">查看所有电站月发电量</a>
           </div>
 
           <div id="main" style="width:100%;height: 500px;"></div>
@@ -176,7 +178,7 @@
   <script src="js/echarts.min.js"></script>
   <script src="./js/toastr.js"></script>
   <script src="js/stationrRank.js"></script>
-  <!-- <script>
+  <script>
     (function () {
       document.addEventListener('DOMContentLoaded', function () {
         var html = document.documentElement;
@@ -187,7 +189,7 @@
         }
       }, false);
     })();
-  </script> -->
+  </script>
 </body>
 
 
